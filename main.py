@@ -1,8 +1,7 @@
-import ipdb;
 import streamlit as st
 from news_fetcher import fetch_news_from_rss
 from preprocessor import preprocess_news_items
-from summarizer import summarize_news
+from summarizer import summarize_news, generate_citations
 import config
 import apikey
 from pinecone_operations import (
@@ -29,12 +28,13 @@ def main():
             # Generate embeddings for each news item
             news_embeddings = [generate_embedding(article['text']) for article in preprocessed_news]
             numeric_embeddings = convert_string_embeddings_to_numeric_embeddings(news_embeddings)
+            topics = [article['topic'] for article in preprocessed_news]  # Extract topics from preprocessed news
 
             # Create or Connect to Pinecone index
             index_name = 'news'
             dimension = len(numeric_embeddings[0])
             index = create_or_connect_index(index_name, dimension)
-            print(f"Index object created for: {index_name}, Index object: {index}")
+            #print(f"Index object created for: {index_name}, Index object: {index}")
 
             # Insert embeddings into Pinecone
             article_ids = list(range(len(numeric_embeddings)))
@@ -47,45 +47,24 @@ def main():
             # Convert retrieved string IDs to integers
             retrieved_ids_int = [int(i) for i in retrieved_ids]
 
-            # Initialize related news content list
-            related_news = []
-            sources = {}  # To collect unique source links with reference numbers
+            # Filter preprocessed news items based on retrieved IDs
+            filtered_news = [preprocessed_news[id] for id in retrieved_ids_int if id < len(preprocessed_news)]
 
-            # Initialize citation links for the entire group
-            group_citations = []
+            # Check for out-of-range IDs
+            if len(filtered_news) < len(retrieved_ids_int):
+                print("Warning: Some retrieved IDs are out of range for preprocessed news.")
 
-            for i, article_id in enumerate(retrieved_ids_int):
-                if article_id < len(preprocessed_news):
-                    article = preprocessed_news[article_id]
-                    summary = summarize_news(article['text'])
+            # Initialize sources dictionary for citations
+            sources = {}
 
-                    # Add source link to sources dict if not already present
-                    if article['source'] not in sources:
-                        sources[article['source']] = len(sources) + 1  # Assign a new reference number
+            # Generate citations for the filtered news items
+            citations = generate_citations(filtered_news, sources, topics)
 
-                    ref_number = sources[article['source']]
-
-                    # Create a clickable citation with square brackets
-                    citation_link = f"[{ref_number}]({article['source']})"
-                    group_citations.append(citation_link)
-
-                    # Append summary without individual citation to related news
-                    summary_without_link = f"• {summary}"
-                    related_news.append(summary_without_link)
-                else:
-                    print(f"Warning: Retrieved ID {article_id} is out of range for preprocessed news.")
-
-            # Combine group citations and add them to the end of the bullet point
-            if group_citations:
-                group_citations_content = ' '.join(group_citations)
-                summary_with_group_citation = f"{summary_without_link} {group_citations_content}"
-                related_news[-1] = summary_with_group_citation  # Replace the last item in the list with the summary with group citation
-
-            # Summarize and display the news
-            if related_news:
-                news_content = '\n'.join(related_news)
+            # Display the news with citations
+            if citations:
+                news_content = '\n'.join(citations)
                 st.subheader("Summary")
-                st.markdown(news_content, unsafe_allow_html=True)  # Use markdown to render hyperlinks
+                st.markdown(news_content, unsafe_allow_html=True)
             else:
                 st.write("No relevant news articles found for summarization.")
 

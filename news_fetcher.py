@@ -1,6 +1,6 @@
 import feedparser
 
-def fetch_news_from_rss(rss_urls, max_articles_per_feed=4):
+def fetch_news_from_rss(rss_urls, max_articles_per_feed=5):
     news_items = []
     for url in rss_urls:
         feed = feedparser.parse(url)
