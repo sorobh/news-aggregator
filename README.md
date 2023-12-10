@@ -8,4 +8,5 @@
 
 ## Demo Video
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/0aLXGALSal4?si=Fghs45vjylDktRB0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+[![Demo Video](https://img.youtube.com/vi/0aLXGALSal4/0.jpg)](https://youtu.be/0aLXGALSal4)
+
