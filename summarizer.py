@@ -7,10 +7,10 @@ openai.api_key = apikey
 def summarize_news(news_content):
     # Instruct the model to group related news and summarize in consolidated bullet points
     prompt_text = [
-        "Summarize the following news items into bullet points as though a single jounrlaist is writing in a concise manner and a formal tone.\n"
-        "Group all related news items in a single bullet so that there's no repetition of topics. \n"
-        "Each bullet point should start on a separate line indicating it's a new topic.\n"
-        "Ensure each bullet ends with citation number(s) that are linked. If the bullet point combines 3 articles, then it should have 3 citations that link to those 3 articles. Citations to be placed at the end of individual bullet points in markdown format and not at the bottom as footnotes:\n\n"
+        "Summarize the following news items as though a single journalist is telling daily highlights.\n"
+        "Group all news items related to a single topic in a single paragraph so that there's no repetition of topics. \n"
+        "If a topic combines 3 sources, then it should have 3 citations that link to those 3 sources. These linked citations should be placed at the end of the paragraph in markdown format and should only include sources from filtered_news\n"
+        "Start new topic on new lines to indicate the previous topic has ended:\n\n"
         + news_content
     ]
     response = openai.Completion.create(
@@ -56,7 +56,7 @@ def generate_citations(articles, sources, topics):
                 max_index = topic_index
 
         # Check if the article fits in an existing topic group
-        if max_similarity > 0.7:  # Threshold for considering as the same topic
+        if max_similarity > 0.9:  # Threshold for considering as the same topic
             current_topic = max_index
         else:
             current_topic = i

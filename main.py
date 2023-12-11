@@ -34,7 +34,6 @@ def main():
             index_name = 'news'
             dimension = len(numeric_embeddings[0])
             index = create_or_connect_index(index_name, dimension)
-            #print(f"Index object created for: {index_name}, Index object: {index}")
 
             # Insert embeddings into Pinecone
             article_ids = list(range(len(numeric_embeddings)))
@@ -60,11 +59,13 @@ def main():
             # Generate citations for the filtered news items
             citations = generate_citations(filtered_news, sources, topics)
 
-            # Display the news with citations
+            # Display the news with citations and summaries
             if citations:
-                news_content = '\n'.join(citations)
+                # Generate summaries for the filtered news items
+                summaries = [summarize_news(article['text']) for article in filtered_news]
                 st.subheader("Summary")
-                st.markdown(news_content, unsafe_allow_html=True)
+                for i, (citation, summary) in enumerate(zip(citations, summaries)):
+                    st.markdown(f"{i+1}. {summary}\n\n{citation}", unsafe_allow_html=True)
             else:
                 st.write("No relevant news articles found for summarization.")
 

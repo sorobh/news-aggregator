@@ -1,3 +1,3 @@
-apikey = 'insert api key here'
-pinecone_env = 'insert env here'
-pinecone_key = 'insert key here'
+apikey = 'paste value here'
+pinecone_env = 'paste value here'
+pinecone_key = 'paste value here'
