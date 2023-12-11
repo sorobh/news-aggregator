@@ -3,8 +3,7 @@
 
 
 ## About
-
-
+The quest for people’s attention makes media businesses pick sides and often leads to biased narratives that cater to what their consumers want to hear. I always wondered if we could build something that provides us with News that is just facts, no opinions or bias. Turns out we could potentially hope to do that using Large Language Models (LLMs). This is one such attempt to build a tool that fetches relevant news and summarizes it in an unbiased manner.
 
 ## Demo Video
 
